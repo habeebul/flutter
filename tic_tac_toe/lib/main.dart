@@ -27,6 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var valu = 'X';
   var squares = ['', '', '', '', '', '', '', '', ''];
   var xIsNext = true;
+  var status = "Next Player: X";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,19 +35,56 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: _buildGrid(),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(status),
+              Expanded(child: _buildGrid()),
+            ]),
       ),
     );
   }
 
   _buildLogic(i) {
-    var squares1 = squares.sublist(0);
-    print("enter ");
+    if (_calculateWinner() != '' || squares[i] != '') {
+    } else {
+      setState(() {
+        squares[i] = xIsNext ? 'X' : 'O';
+        xIsNext = !xIsNext;
+      });
+    }
+    var winner = _calculateWinner();
+    setState(() {
+      if (winner != '') {
+        status = 'Winner : ' + winner;
+      } else {
+        status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+      }
+    });
+  }
 
-    print("enter else");
-    squares1[i] = xIsNext ? 'X' : 'O';
-    squares = squares1;
-    xIsNext = !xIsNext;
+  _calculateWinner() {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (var i = 0; i < lines.length; i++) {
+      var a = lines[i][0];
+      var b = lines[i][1];
+      var c = lines[i][2];
+      if (squares[a] != '' &&
+          squares[a] == squares[b] &&
+          squares[a] == squares[c]) {
+        return squares[a];
+      }
+    }
+    return '';
   }
 
   Widget _buildGrid() =>
